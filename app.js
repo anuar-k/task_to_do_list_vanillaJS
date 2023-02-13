@@ -105,39 +105,17 @@ let tasks = [
     const form = document.forms['addTask']
     const inputTitle = form.elements['title']
     const inputBody = form.elements['body']
-//    const selectedTheme = document.getElementById('themeSelect')
     const selectedTheme = document.querySelector('.form-control')
-
 
     //Events
     form.addEventListener('submit', onFormSubmitEvent)
     ul.addEventListener('click', onDeleteHandler)
     selectedTheme.addEventListener('change', onChangeThemeHandler)
 
-    init()
+    const themeType = localStorage.getItem('themeType') || 'default'
+    changeTheme(themeType)
 
-    function init(){
-            const themeType = localStorage.getItem('themeType')
-            console.log(themeType)
-            if (!themeType && themeType !== 'default'){
-               localStorage.getItem('themeType', 'default')
-               Object.entries(themes["default"]).forEach(([key, val]) => document.body.style.setProperty(key, val))
-
-            } else {
-                selectedTheme.value = themeType
-                localStorage.getItem('themeType', themeType)
-                Object.entries(themes[themeType]).forEach(([key, val]) => document.body.style.setProperty(key, val))
-            }
-    }
-
-    function changeTheme(){
-        if(!themeType){
-              if (themeType === 'default'){
-                localStorage.getItem('themeType', 'default')
-              } else {
-                    Object.entries(themes[themeType]).forEach(([key, val]) => document.body.style.setProperty(key, val))
-              }
-        }
+    function changeTheme(themeType){
         selectedTheme.value = themeType
         Object.entries(themes[themeType]).forEach(([key, val]) => document.body.style.setProperty(key, val))
     }
@@ -145,7 +123,7 @@ let tasks = [
     function onChangeThemeHandler({target}){
         Object.entries(themes[target.value]).forEach(([key, val]) => document.body.style.setProperty(key, val))
         localStorage.setItem('themeType', `${target.value}`)
-        changeTheme()
+        changeTheme(target.value)
     }
 
     function onDeleteHandler(e){
@@ -155,8 +133,7 @@ let tasks = [
             const parentElement = e.target.closest('[data-task-id]')
             const id = parentElement.dataset.taskId
             const newArr = [...tasks.filter(a => a._id !== id)]
-            tasks = newArr
-            ul.replaceChildren(renderAllTasks(tasks))
+            ul.replaceChildren(renderAllTasks(newArr))
         }
     }
 
